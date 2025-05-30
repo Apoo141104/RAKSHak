@@ -1,0 +1,6 @@
+
+streamlit
+presidio-analyzer
+python-dotenv
+transformers
+torch
