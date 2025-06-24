@@ -144,7 +144,7 @@ GROQ_API_KEY = "your_groq_api_key_here"
 ### ▶️ Step 5: Run the Streamlit App
 
 ```bash
-streamlit run app.py
+streamlit run main2.py
 ```
 
 > 🌐 Opens in your browser at: [http://localhost:8501](http://localhost:8501)
