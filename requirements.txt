@@ -1,8 +1,24 @@
-streamlit
-presidio-analyzer
-python-dotenv # Useful for local testing, not strictly needed for Streamlit Cloud secrets
-transformers
-torch
-groq
-sentencepiece # Common dependency for many HuggingFace models
-accelerate # Often helps with model loading and device placement for transformers
+# Core Requirements
+streamlit==1.46.0
+python-dotenv==1.1.0
+
+# PII Detection
+presidio-analyzer==2.2.358
+spacy==3.8.7
+spacy-legacy==3.0.12
+spacy-loggers==1.0.5
+en-core-web-lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl
+
+# NLP Models
+torch==2.7.1
+transformers==4.38.2
+sentencepiece==0.2.0
+accelerate==1.8.1
+
+# Groq API
+groq==0.28.0
+
+# Additional Processing
+regex==2024.11.6
+tqdm==4.67.1
+protobuf==6.31.1
