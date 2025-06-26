@@ -1,7 +1,6 @@
 import os
 import torch
 import sys
-import subprocess
 import streamlit as st
 from dotenv import load_dotenv
 from presidio_analyzer import AnalyzerEngine, PatternRecognizer, Pattern
@@ -21,20 +20,6 @@ except KeyError:
 # Force CPU-only and prevent CUDA initialization
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
-# Ensure correct torch installation on Streamlit Cloud
-if 'streamlit' in sys.modules:
-    subprocess.run([
-        sys.executable, 
-        "-m", 
-        "pip", 
-        "install", 
-        "torch==2.7.1+cpu", 
-        "--index-url", 
-        "https://download.pytorch.org/whl/cpu",
-        "--no-cache-dir",
-        "--force-reinstall"
-    ], check=True)
 
 # --- Custom CSS for Enhanced UI ---
 st.markdown("""
