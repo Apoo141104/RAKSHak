@@ -2,7 +2,6 @@ streamlit==1.46.0
 python-dotenv==1.1.0
 presidio-analyzer==2.2.358
 spacy==3.8.7
-en-core-web-lg==3.8.0
 torch==2.7.1
 transformers==4.38.2
 sentencepiece==0.2.0
