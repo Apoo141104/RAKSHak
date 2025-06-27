@@ -1,7 +1,11 @@
-streamlit
-presidio-analyzer
-python-dotenv # Useful for local testing, not strictly needed for Streamlit Cloud secrets
-transformers
-torch
-groq
-accelerate # Often helps with model loading and device placement for transformers
+streamlit==1.46.0
+python-dotenv==1.1.0
+presidio-analyzer==2.2.358
+spacy==3.8.7
+torch==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+transformers==4.38.2
+accelerate==1.8.1
+groq==0.28.0
+protobuf==6.31.1
+regex==2024.11.6
+tqdm==4.67.1
