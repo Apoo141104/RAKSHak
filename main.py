@@ -1,13 +1,20 @@
 import os
-import torch
 import sys
+import torch
 import streamlit as st
 from dotenv import load_dotenv
+
+# Presidio
 from presidio_analyzer import AnalyzerEngine, PatternRecognizer, Pattern
-from presidio_analyzer.nlp_engine import NlpEngineProvider
+from presidio_analyzer.nlp_engine import NlpEngineProvider, SpacyNlpEngine
+
+# NLP and HuggingFace
 import spacy
 from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
+
+# Groq API
 from groq import Groq
+
 
 # --- Environment Variable Setup ---
 try:
@@ -105,23 +112,30 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Analyzer Functions ---
-@st.cache_resource
+
 @st.cache_resource
 def get_presidio_analyzer():
-    # Ensure SpaCy model is available
+    # --- Load Spacy model manually ---
+    import spacy
     try:
-        spacy.load("en_core_web_lg")
-    except OSError:
+        nlp = spacy.load("en_core_web_lg")
+    except:
         from spacy.cli import download
         download("en_core_web_lg")
-
-    config = {
+        nlp = spacy.load("en_core_web_lg")
+    
+    # --- Configure NLP engine for Presidio ---
+    provider = NlpEngineProvider(nlp_configuration={
         "nlp_engine_name": "spacy",
         "models": [{"lang_code": "en", "model_name": "en_core_web_lg"}]
-    }
-    nlp_engine = NlpEngineProvider(nlp_configuration=config).create_engine()
+    })
+    nlp_engine = provider.create_engine()
+
+    # --- Create AnalyzerEngine with custom recognizers ---
     analyzer = AnalyzerEngine(nlp_engine=nlp_engine, supported_languages=["en"])
 
+    # Add custom regex patterns
+    from presidio_analyzer import PatternRecognizer, Pattern
     custom_patterns = {
         "EMPLOYEE_ID": r"E\d{2}[A-Z]{2,4}U\d{4}",
         "IN_AADHAAR": r"\b\d{4}\s?\d{4}\s?\d{4}\b",
@@ -130,11 +144,15 @@ def get_presidio_analyzer():
         "IN_VOTER": r"\b[A-Z]{3}[0-9]{7}\b",
         "IN_VEHICLE_REGISTRATION": r"\b[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}\b"
     }
-    for ent, pat in custom_patterns.items():
-        recognizer = PatternRecognizer(supported_entity=ent,
-                                       patterns=[Pattern(name=ent, regex=pat, score=0.9)])
+    for entity, pattern in custom_patterns.items():
+        recognizer = PatternRecognizer(
+            supported_entity=entity,
+            patterns=[Pattern(name=entity, regex=pattern, score=0.9)]
+        )
         analyzer.registry.add_recognizer(recognizer)
+    
     return analyzer
+
 
 # Get the analyzer instance
 analyzer = get_presidio_analyzer()
