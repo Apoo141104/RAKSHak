@@ -4,6 +4,8 @@ import sys
 import streamlit as st
 from dotenv import load_dotenv
 from presidio_analyzer import AnalyzerEngine, PatternRecognizer, Pattern
+from presidio_analyzer.nlp_engine import NlpEngineProvider
+import spacy
 from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
 from groq import Groq
 
@@ -104,13 +106,22 @@ st.markdown("""
 
 # --- Analyzer Functions ---
 @st.cache_resource
+@st.cache_resource
 def get_presidio_analyzer():
-    """
-    Initializes and returns a Presidio AnalyzerEngine with custom PII patterns.
-    This function is cached to prevent re-initialization on every rerun.
-    """
-    analyzer = AnalyzerEngine()
-    # Define custom PII patterns for Indian context and Employee IDs
+    # Ensure SpaCy model is available
+    try:
+        spacy.load("en_core_web_lg")
+    except OSError:
+        from spacy.cli import download
+        download("en_core_web_lg")
+
+    config = {
+        "nlp_engine_name": "spacy",
+        "models": [{"lang_code": "en", "model_name": "en_core_web_lg"}]
+    }
+    nlp_engine = NlpEngineProvider(nlp_configuration=config).create_engine()
+    analyzer = AnalyzerEngine(nlp_engine=nlp_engine, supported_languages=["en"])
+
     custom_patterns = {
         "EMPLOYEE_ID": r"E\d{2}[A-Z]{2,4}U\d{4}",
         "IN_AADHAAR": r"\b\d{4}\s?\d{4}\s?\d{4}\b",
@@ -119,12 +130,9 @@ def get_presidio_analyzer():
         "IN_VOTER": r"\b[A-Z]{3}[0-9]{7}\b",
         "IN_VEHICLE_REGISTRATION": r"\b[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}\b"
     }
-    # Add each custom pattern as a PatternRecognizer to the analyzer
-    for entity, pattern in custom_patterns.items():
-        recognizer = PatternRecognizer(
-            supported_entity=entity,
-            patterns=[Pattern(name=entity, regex=pattern, score=0.9)]
-        )
+    for ent, pat in custom_patterns.items():
+        recognizer = PatternRecognizer(supported_entity=ent,
+                                       patterns=[Pattern(name=ent, regex=pat, score=0.9)])
         analyzer.registry.add_recognizer(recognizer)
     return analyzer
 
