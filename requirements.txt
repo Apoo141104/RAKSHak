@@ -4,5 +4,4 @@ python-dotenv # Useful for local testing, not strictly needed for Streamlit Clou
 transformers
 torch
 groq
-sentencepiece # Common dependency for many HuggingFace models
 accelerate # Often helps with model loading and device placement for transformers
