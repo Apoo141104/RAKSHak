@@ -2,11 +2,12 @@ streamlit==1.46.0
 python-dotenv==1.1.0
 presidio-analyzer==2.2.358
 spacy==3.8.7
+torch==2.7.1
+--extra-index-url https://download.pytorch.org/whl/cpu
 transformers==4.38.2
 accelerate==1.8.1
-torch>=2.2.2  # CPU-only compatible
 groq==0.28.0
 protobuf==6.31.1
 regex==2024.11.6
 tqdm==4.67.1
-en-core-web-lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl
+https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl
